@@ -92,9 +92,12 @@ fun TvCard(
                         false
                     }
                     onLongClick != null && isSelect && ev.type == KeyEventType.KeyDown &&
-                        ev.nativeKeyEvent.repeatCount == 1 -> {
-                        longFired = true
-                        onLongClick()
+                        ev.nativeKeyEvent.repeatCount > 0 &&
+                        ev.nativeKeyEvent.eventTime - ev.nativeKeyEvent.downTime >= 500L -> {
+                        if (!longFired) {
+                            longFired = true
+                            onLongClick()
+                        }
                         true
                     }
                     onLongClick != null && ev.key == Key.Menu && ev.type == KeyEventType.KeyUp -> {
