@@ -23,7 +23,7 @@ object AppRepository {
      */
     fun load(context: Context): List<AppItem> {
         val pm = context.packageManager
-        val seen = HashSet<String>()
+        // Keep decoded artwork modest: low-memory Android TV devices can have only 1 GB RAM.\n        val memoryClassMb = (context.getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager)?.memoryClass ?: 128\n        val bannerWidth = if (memoryClassMb <= 128) 240 else 320\n        val iconSize = if (memoryClassMb <= 128) 128 else 192\n        val seen = HashSet<String>()
         val result = ArrayList<AppItem>()
 
         val categories = listOf(Intent.CATEGORY_LEANBACK_LAUNCHER, Intent.CATEGORY_LAUNCHER)
@@ -43,12 +43,12 @@ object AppRepository {
                     runCatching {
                         (info.activityInfo.loadBanner(pm)
                             ?: info.activityInfo.applicationInfo.loadBanner(pm))
-                            ?.toBitmap(320, 180)
+                            ?.toBitmap(bannerWidth, bannerWidth * 9 / 16)
                             ?.asImageBitmap()
                     }.getOrNull()
                 } else null
 
-                val icon = runCatching { info.loadIcon(pm).toBitmap(192, 192).asImageBitmap() }.getOrNull()
+                val icon = runCatching { info.loadIcon(pm).toBitmap(iconSize, iconSize).asImageBitmap() }.getOrNull()
 
                 result += AppItem(
                     label = info.loadLabel(pm).toString(),
