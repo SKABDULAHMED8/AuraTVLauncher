@@ -12,14 +12,14 @@ android {
         applicationId = "com.auratv.launcher"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     signingConfigs {
         create("release") {
             // Release credentials are supplied by GitHub Actions Secrets.
-            // Never commit the keystore or passwords to this repository.
+            // Keep the existing permanent release key unchanged.
             val releaseStoreFile = providers.environmentVariable("RELEASE_STORE_FILE").orNull
             val releaseStorePassword = providers.environmentVariable("RELEASE_STORE_PASSWORD").orNull
             val releaseKeyAlias = providers.environmentVariable("RELEASE_KEY_ALIAS").orNull
