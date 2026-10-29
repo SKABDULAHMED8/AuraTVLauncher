@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var themeMode by remember { mutableStateOf(prefs.themeMode) }
-            var pinned by remember { mutableStateOf(prefs.pinned) }
+            var pinned by remember { mutableStateOf(prefs.pinned) }\n            var backgroundColor by remember { mutableStateOf(prefs.backgroundColor) }
 
             val apps by produceState(emptyList<AppItem>(), reloadTick.intValue) {
                 value = withContext(Dispatchers.Default) { AppRepository.load(applicationContext) }
@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     onUninstall = { app ->
                         safeStart(Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}")))
                     },
-                    onSystem = { action -> safeStart(Intent(action.intentAction)) },
+                    onSystem = { action -> safeStart(Intent(action.intentAction)) },\n                    backgroundColor = backgroundColor,\n                    onCycleBackground = {\n                        backgroundColor = when (backgroundColor) {\n                            "default" -> "ocean"\n                            "ocean" -> "forest"\n                            "forest" -> "sunset"\n                            else -> "default"\n                        }\n                        prefs.backgroundColor = backgroundColor\n                    },
                 )
             }
         }
