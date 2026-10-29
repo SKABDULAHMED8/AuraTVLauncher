@@ -2,14 +2,17 @@
 
 # Aura Launcher
 
-**A clean, Apple TV style home screen for Android TV and Google TV.**
-No ads. No banners. No tracking. Dark and Light themes.
+**A clean, Apple TV–inspired home screen for Android TV and Google TV.**
+
+A simple, remote-friendly launcher with Dark, Light and Auto themes. No ads, analytics, or network permission.
 
 ![Platform](https://img.shields.io/badge/platform-Android%20TV-3ddc84)
-![Min SDK](https://img.shields.io/badge/minSdk-24-blue)
+![Minimum Android](https://img.shields.io/badge/minimum-Android%207.0%20(API%2024)-blue)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF)
 ![UI](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4)
 ![Ads](https://img.shields.io/badge/ads-none-brightgreen)
+
+[Download the latest release](https://github.com/SKABDULAHMED8/AuraTVLauncher/releases/latest) · [Installation guide](docs/INSTALLATION.md) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -18,151 +21,181 @@ No ads. No banners. No tracking. Dark and Light themes.
 ## Preview
 
 | Dark theme | Light theme |
-| :---: | :---: |
-| ![Dark theme](docs/preview-dark.svg) | ![Light theme](docs/preview-light.svg) |
+|:--:|:--:|
+| ![Illustrated preview of Aura Launcher in dark theme](docs/preview-dark.svg) | ![Illustrated preview of Aura Launcher in light theme](docs/preview-light.svg) |
 
-> The previews are illustrations of the layout. Your own installed apps appear in place of the sample cards, using their official TV banners.
+> **Preview note:** These are illustrative mockups, not photographs or captures from a running TV. The installed launcher displays apps available on your device. Real device screenshots can be added here as they become available.
 
 ## Features
 
-| Feature | Details |
-| --- | --- |
-| **Apple TV look** | Large rounded cards. The focused card lifts with a scale, shadow and ring. Big clock and date at the top. |
-| **Ad-free by design** | The app has no `INTERNET` permission, no ad SDKs and no analytics, so it cannot load ads, promoted rows or banners. |
-| **Dark, Light and Auto** | The Theme button (top right) cycles Auto, Dark and Light. Your choice is remembered. |
-| **Favorites row** | Pin the apps you use most. They appear in a larger row at the top. |
-| **All Apps row** | Every installed app. TV apps show their 16:9 banner, other apps show a clean icon tile. |
-| **System shortcuts** | One-press access to Settings, Wi-Fi, Bluetooth and Display. |
-| **Live app list** | The list updates when you install, update or remove an app. |
-| **Remote friendly** | Built for D-pad navigation. Back never closes the launcher. |
-| **Works on any TV size** | Sizes are in density-independent units, so 32", 43", 55" and 65" TVs show the same proportions. |
-| **Private** | Settings stay on the device in local storage. Nothing is sent anywhere. |
+| Feature | What it does |
+|---|---|
+| **Apple TV–inspired layout** | Large rounded app cards, a clock and date, and a visible focus state for remote navigation. |
+| **Dark, Light and Auto themes** | Use the Theme control to cycle between the available themes. The choice is stored locally. |
+| **Favorites** | Keep frequently used apps in a larger Favorites row. |
+| **Installed apps** | Browse supported installed TV apps. TV apps can show their banners; other apps use icon tiles. |
+| **System shortcuts** | Quick access to Settings, Wi-Fi, Bluetooth and Display where the TV firmware supports those screens. |
+| **App list refresh** | The launcher responds to app installation, update and removal events. |
+| **Remote-first navigation** | Designed for a D-pad, OK/Select and Back buttons. |
+| **Local settings** | Theme and favorites are stored on the device. |
+| **No network permission** | The app manifest does not request Internet access and the project does not include ad or analytics SDKs. |
 
-## Remote control guide
+## Remote control
 
-| Button | Action |
-| --- | --- |
-| D-pad | Move focus between cards |
-| OK / Select | Open the app |
-| Long-press OK, or Menu | Open the app menu: Add or Remove Favorites, App info, Uninstall |
-| Up, then OK on **Theme** | Switch between Auto, Dark and Light |
-| Back | Stays on the home screen |
+| Remote button | Action |
+|---|---|
+| D-pad arrows | Move focus between controls and app cards |
+| OK / Select | Open the focused app or control |
+| Long-press OK, or Menu where supported | Open the app menu for supported actions such as favorites and app info |
+| Focus Theme and press OK | Cycle Auto, Dark and Light |
+| Back | Return to the launcher home screen |
 
-## Download
+Exact remote behavior can vary by TV manufacturer and remote model.
 
-Signed APKs are published on the [Releases page](../../releases). Download `AuraLauncher-v1.0.0.apk` (or the latest version) and follow **Install on your TV** below.
+## Download Aura Launcher
 
-## Download and build
+1. Open the [GitHub Releases page](https://github.com/SKABDULAHMED8/AuraTVLauncher/releases).
+2. Open the latest **published** release.
+3. Download the APK asset, for example `AuraLauncher-v1.0.0.apk`.
+4. Optionally download the accompanying `.apk.sha256` file to check the APK's SHA-256 hash.
 
-### Option 1: build in the cloud with GitHub Actions (no setup)
+Only install an APK from a release you trust. The release APK is signed with the project's permanent release key.
 
-1. Open the **Actions** tab of this repository.
-2. Select **Build APK** and press **Run workflow**.
-3. When the run finishes, download **AuraLauncher-apk** from the **Artifacts** section.
+## Install on an Android TV
 
-To publish a release with the APK attached, push a version tag:
+### Method A — USB drive and a TV file manager
 
-```bash
-git tag v1.0.0
-git push origin v1.0.0
+1. Download the APK on a computer or phone.
+2. Copy the APK to a USB drive, then connect it to the TV.
+3. Open a file manager on the TV, such as CX File Explorer, and open the APK.
+4. If Android asks, allow that file manager to **Install unknown apps**. The exact menu differs by Android version and TV brand.
+5. Select **Install**, wait for completion, and open Aura Launcher from the TV's app list.
+
+If the TV displays **App not installed**, see [Installation troubleshooting](docs/INSTALLATION.md#troubleshooting).
+
+### Method B — Install with ADB (optional)
+
+ADB requires debugging access on the TV. Some TV brands and custom interfaces, including some operator or CloudTV builds, may hide or disable these settings. Use the USB/file-manager method if ADB is unavailable.
+
+On a computer with Android Platform Tools installed:
+
+```powershell
+adb connect TV_IP_ADDRESS:5555
+adb install AuraLauncher-v1.0.0.apk
 ```
 
-### Option 2: build with Android Studio
+Replace `TV_IP_ADDRESS` with your TV's IP address. Use the actual port shown by the TV's debugging settings; do not assume port 5555 is enabled. Accept the authorization prompt on the TV if one appears.
 
-1. Install the latest Android Studio.
-2. Choose **Open** and select this folder, then wait for the Gradle sync.
-3. Go to **Build > Build App Bundle(s) / APK(s) > Build APK(s)**.
-4. Find the file at `app/build/outputs/apk/debug/app-debug.apk`.
+## Set Aura Launcher as the Home app
 
-### Option 3: command line
+Installing Aura Launcher does not guarantee that every TV will let it replace the manufacturer's home screen.
 
-Requires JDK 17, the Android SDK and Gradle 8.10 or newer.
+- On some Android TV devices, pressing **Home** opens an app chooser. Select Aura Launcher and choose **Always** if that option is available.
+- On other devices, check the system's **Default apps**, **Home app**, or launcher settings.
+- Some custom TV firmware does not expose a Home-app selector or Developer options. In that case, Aura Launcher may still be opened from the app list, but the stock Home button may continue to open the manufacturer's launcher.
 
-```bash
-gradle assembleDebug      # app/build/outputs/apk/debug/app-debug.apk
-gradle assembleRelease    # app/build/outputs/apk/release/app-release.apk
-```
+Do not disable or remove the stock launcher unless you have confirmed that your TV provides another reliable way to reach a working Home app. Manufacturer-specific behavior can differ.
 
-> Tagged release builds are signed with a permanent key stored in GitHub Secrets (`RELEASE_KEYSTORE_BASE64`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`), so updates install over older versions. Branch builds produce an unsigned-for-release debug APK for testing only. Never commit the keystore.
+## Updating an existing installation
 
-## Install on your TV
+- Install future production updates from the GitHub Releases page.
+- **Keep the permanent release signing key unchanged.** Updates signed with the same key can normally replace previous production releases without removing app data.
+- Android does not normally allow an APK signed with a different certificate to update the installed app. For example, a release APK may not update a debug-signed test APK.
+- If Android reports **App not installed** during an update, do not immediately uninstall the current app. Read the error and back up any important app data first. Uninstalling normally removes the app's private data and settings.
 
-1. Copy the APK to the TV with a USB drive, or install it over the network:
-   ```bash
-   adb connect <TV-IP>:5555
-   adb install app-release.apk
-   ```
-2. If you use a file manager on the TV, allow **Install unknown apps** when asked.
-3. Open **Aura Launcher** from the app list once to confirm it runs.
+See the [installation and update guide](docs/INSTALLATION.md) for more detail.
 
-## Set Aura Launcher as your Home screen
+## Build from source
 
-**Android TV 9 and many TV boxes:** press the **Home** button, choose **Aura Launcher**, then select **Always**.
+### Requirements
 
-**Google TV and newer Android TV (no chooser):** enable Developer options and network debugging on the TV, then run from a computer:
+- JDK 17
+- Android SDK
+- Gradle 8.10.2 (the GitHub Actions workflow uses this version)
+
+### Build a debug APK
 
 ```bash
-adb connect <TV-IP>:5555
-adb shell cmd package set-home-activity com.auratv.launcher/.MainActivity
+gradle assembleDebug
 ```
 
-**Still seeing sponsored rows from the stock home screen?** After Aura Launcher is installed, you can turn the stock launcher off. Package names differ by brand, so check yours first.
+Output: `app/build/outputs/apk/debug/app-debug.apk`
+
+Debug APKs are for development and testing. They are not the official production download.
+
+### Build a signed release APK
+
+Release signing uses environment variables supplied to Gradle by the release workflow. Do not commit a keystore or passwords to the repository.
+
+The tag-triggered GitHub Actions workflow expects these repository secrets:
+
+- `RELEASE_KEYSTORE_BASE64`
+- `RELEASE_STORE_PASSWORD`
+- `RELEASE_KEY_ALIAS`
+- `RELEASE_KEY_PASSWORD`
+
+To trigger a versioned release build, create and push a version tag only after the corresponding source is ready:
 
 ```bash
-adb shell pm disable-user --user 0 com.google.android.tvlauncher
-adb shell pm disable-user --user 0 com.google.android.apps.tv.launcherx
-
-# To undo:
-adb shell pm enable com.google.android.tvlauncher
-adb shell pm enable com.google.android.apps.tv.launcherx
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
-Only do this once Aura Launcher is installed, so the TV always has a Home app.
+The workflow builds the release APK, creates a SHA-256 checksum, and creates a **draft** GitHub Release. Review the draft and publish it when ready. Do not create a new version tag for the already-published `v1.0.0`.
 
 ## Project structure
 
-```
+```text
 AuraTVLauncher/
 ├── app/src/main/
-│   ├── AndroidManifest.xml          # HOME + leanback launcher, no INTERNET permission
+│   ├── AndroidManifest.xml
 │   ├── java/com/auratv/launcher/
-│   │   ├── MainActivity.kt          # Entry point, theme and favorites state, package events
-│   │   ├── HomeScreen.kt            # Home layout: clock, rows, system shortcuts
-│   │   ├── Components.kt            # Focus cards, buttons, long-press menu dialog
-│   │   ├── AppRepository.kt         # Reads installed apps and their TV banners
-│   │   ├── Palette.kt               # Dark and Light color palettes
-│   │   └── Prefs.kt                 # Local settings (theme, favorites)
-│   └── res/                         # Icon, TV banner, theme
-├── docs/                            # README preview images
-└── .github/workflows/build.yml      # Cloud APK build
+│   └── res/
+├── docs/
+│   ├── INSTALLATION.md
+│   ├── preview-dark.svg
+│   └── preview-light.svg
+├── .github/workflows/build.yml
+├── CHANGELOG.md
+└── README.md
 ```
 
-## Tech stack
+## Technical details
 
-- Kotlin 2.0 and Jetpack Compose
-- Android Gradle Plugin 8.7, Gradle 8.10
-- Min SDK 24 (Android 7.0), target SDK 34
+- **Language:** Kotlin 2.0
+- **UI:** Jetpack Compose
+- **Android Gradle Plugin:** 8.7
+- **Gradle:** 8.10.2 in CI
+- **Minimum SDK:** 24 (Android 7.0)
+- **Target SDK:** 34
+- **Application ID:** `com.auratv.launcher`
 
 ## Privacy
 
-Aura Launcher requests no network access. The only extra permission is `REQUEST_DELETE_PACKAGES`, used for the Uninstall action in the app menu. Theme and favorites are stored locally on your device.
+The Android manifest does not request the `INTERNET` permission. Theme and favorites are stored locally. The app requests `REQUEST_DELETE_PACKAGES` for its uninstall action. Review the source code and permissions yourself if you need to validate these claims for a particular build.
 
 ## Troubleshooting
 
-| Problem | Fix |
-| --- | --- |
-| Pressing Home still opens the old launcher | Use the `set-home-activity` command above, or disable the stock launcher. |
-| An app is missing | Apps without a launcher entry are not listed. Reopen the launcher to refresh. |
-| A system shortcut does nothing | Some TV brands remove that settings screen. Use **Settings** instead. |
-| Build fails on first sync | Update Android Studio, then run **File > Sync Project with Gradle Files**. |
+| Problem | What to try |
+|---|---|
+| **App not installed** | Check whether the installed app was signed with a different key, confirm the APK download completed, and check the Android version. See the [troubleshooting guide](docs/INSTALLATION.md#troubleshooting). |
+| **Home still opens the stock launcher** | Check whether your TV exposes a Home-app chooser or default launcher setting. Some custom firmware blocks this. |
+| **An app is missing** | Some apps do not publish a launcher entry. Check the TV's app list and reopen Aura Launcher. |
+| **A system shortcut does nothing** | The TV manufacturer may not provide that settings screen. Open the corresponding option through system Settings. |
+| **Gradle build fails** | Check JDK 17, Android SDK installation, and the Gradle version. |
 
 ## Roadmap
+
+Ideas under consideration:
 
 - Custom wallpapers
 - Reorder and hide apps
 - Per-app row sorting
-- Optional weather widget (off by default, would require opt-in network access)
+
+These are ideas, not promises or committed release dates.
 
 ## Contributing
 
-Issues and pull requests are welcome. Please keep the project ad-free and network-free by default.
+Bug reports and pull requests are welcome. Include your TV brand/model, Android version (if known), what you expected, and the steps to reproduce the issue. Do not include passwords, signing keys, or other secrets in issues.
+
+Please keep the project ad-free and network-free by default.
