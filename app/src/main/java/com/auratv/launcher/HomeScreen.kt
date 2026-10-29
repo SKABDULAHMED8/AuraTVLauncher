@@ -62,6 +62,7 @@ fun HomeScreen(
     onCycleBackground: () -> Unit = {},
 ) {
     val p = LocalPalette.current
+    val context = LocalContext.current
     var menuApp by remember { mutableStateOf<AppItem?>(null) }
     var showSettings by remember { mutableStateOf(false) }
     val firstFocus = remember { FocusRequester() }
@@ -163,7 +164,9 @@ fun HomeScreen(
                             contentPadding = PaddingValues(horizontal = 56.dp, vertical = 24.dp),
                             horizontalArrangement = Arrangement.spacedBy(24.dp),
                         ) {
-                            items(SystemAction.entries.filter { action ->\n                                runCatching { Intent(action.intentAction).resolveActivity(context.packageManager) != null }.getOrDefault(false)\n                            }) { action ->
+                            items(SystemAction.entries.filter { action ->
+                                runCatching { Intent(action.intentAction).resolveActivity(context.packageManager) != null }.getOrDefault(false)
+                            }) { action ->
                                 LabelTile(
                                     label = action.label,
                                     width = 200.dp,
