@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,9 +58,12 @@ fun HomeScreen(
     onAppInfo: (AppItem) -> Unit,
     onUninstall: (AppItem) -> Unit,
     onSystem: (SystemAction) -> Unit,
+    backgroundColor: String = "default",
+    onCycleBackground: () -> Unit = {},
 ) {
     val p = LocalPalette.current
     var menuApp by remember { mutableStateOf<AppItem?>(null) }
+    var showSettings by remember { mutableStateOf(false) }
     val firstFocus = remember { FocusRequester() }
 
     val pinnedApps = remember(apps, pinnedPackages) {
@@ -76,7 +81,7 @@ fun HomeScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(p.bgTop, p.bgBottom)))
+            .background(Brush.verticalGradient(backgroundBrushColors(p, backgroundColor)))
             .drawBehind {
                 drawCircle(
                     brush = Brush.radialGradient(
@@ -99,7 +104,7 @@ fun HomeScreen(
             },
     ) {
         Column(Modifier.fillMaxSize()) {
-            TopBar(themeMode = themeMode, onCycleTheme = onCycleTheme)
+            TopBar(themeMode = themeMode, onCycleTheme = onCycleTheme, onOpenSettings = { showSettings = true })
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -158,7 +163,7 @@ fun HomeScreen(
                             contentPadding = PaddingValues(horizontal = 56.dp, vertical = 24.dp),
                             horizontalArrangement = Arrangement.spacedBy(24.dp),
                         ) {
-                            items(SystemAction.entries.toList()) { action ->
+                            items(SystemAction.entries.filter { action ->\n                                val context = LocalContext.current\n                                runCatching { Intent(action.intentAction).resolveActivity(context.packageManager) != null }.getOrDefault(false)\n                            }) { action ->
                                 LabelTile(
                                     label = action.label,
                                     width = 200.dp,
@@ -171,6 +176,25 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (showSettings) {
+        AlertDialog(
+            onDismissRequest = { showSettings = false },
+            title = { Text("Aura Launcher Settings") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Theme: ${themeMode.label}")
+                    TextButton(onClick = onCycleTheme) { Text("Change theme") }
+                    Text("Background")
+                    TextButton(onClick = onCycleBackground) {
+                        Text("Cycle background color ($backgroundColor)")
+                    }
+                    Text("Wallpaper selection and advanced TV controls are being added in a later step.")
+                }
+            },
+            confirmButton = { TextButton(onClick = { showSettings = false }) { Text("Done") } },
+        )
     }
 
     menuApp?.let { app ->
@@ -201,7 +225,7 @@ private fun Section(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun TopBar(themeMode: ThemeMode, onCycleTheme: () -> Unit) {
+private fun TopBar(themeMode: ThemeMode, onCycleTheme: () -> Unit, onOpenSettings: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -235,4 +259,12 @@ private fun Clock() {
         Text(time, color = p.text, fontSize = 52.sp, fontWeight = FontWeight.Light)
         Text(date, color = p.textDim, fontSize = 18.sp)
     }
+}
+
+
+private fun backgroundBrushColors(p: Palette, choice: String): List<androidx.compose.ui.graphics.Color> = when (choice) {
+    "ocean" -> listOf(androidx.compose.ui.graphics.Color(0xFF061A40), androidx.compose.ui.graphics.Color(0xFF0353A4))
+    "forest" -> listOf(androidx.compose.ui.graphics.Color(0xFF081C15), androidx.compose.ui.graphics.Color(0xFF2D6A4F))
+    "sunset" -> listOf(androidx.compose.ui.graphics.Color(0xFF3A0CA3), androidx.compose.ui.graphics.Color(0xFFF72585))
+    else -> listOf(p.bgTop, p.bgBottom)
 }
