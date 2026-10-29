@@ -13,15 +13,31 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
+    }
+
+    signingConfigs {
+        create("release") {
+            // Release credentials are supplied by GitHub Actions Secrets.
+            // Never commit the keystore or passwords to this repository.
+            val releaseStoreFile = providers.environmentVariable("RELEASE_STORE_FILE").orNull
+            val releaseStorePassword = providers.environmentVariable("RELEASE_STORE_PASSWORD").orNull
+            val releaseKeyAlias = providers.environmentVariable("RELEASE_KEY_ALIAS").orNull
+            val releaseKeyPassword = providers.environmentVariable("RELEASE_KEY_PASSWORD").orNull
+
+            if (!releaseStoreFile.isNullOrBlank()) {
+                storeFile = file(releaseStoreFile)
+            }
+            storePassword = releaseStorePassword
+            keyAlias = releaseKeyAlias
+            keyPassword = releaseKeyPassword
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Signed with the debug key so the release APK installs directly.
-            // Replace with your own keystore if you plan to publish.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
