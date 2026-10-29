@@ -23,7 +23,11 @@ object AppRepository {
      */
     fun load(context: Context): List<AppItem> {
         val pm = context.packageManager
-        // Keep decoded artwork modest: low-memory Android TV devices can have only 1 GB RAM.\n        val memoryClassMb = (context.getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager)?.memoryClass ?: 128\n        val bannerWidth = if (memoryClassMb <= 128) 240 else 320\n        val iconSize = if (memoryClassMb <= 128) 128 else 192\n        val seen = HashSet<String>()
+        // Keep decoded artwork modest: low-memory Android TV devices can have only 1 GB RAM.
+        val memoryClassMb = (context.getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager)?.memoryClass ?: 128
+        val bannerWidth = if (memoryClassMb <= 128) 240 else 320
+        val iconSize = if (memoryClassMb <= 128) 128 else 192
+        val seen = HashSet<String>()
         val result = ArrayList<AppItem>()
 
         val categories = listOf(Intent.CATEGORY_LEANBACK_LAUNCHER, Intent.CATEGORY_LAUNCHER)
