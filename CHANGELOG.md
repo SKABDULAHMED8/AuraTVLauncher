@@ -2,17 +2,24 @@
 
 All notable user-facing changes to Aura Launcher are documented here.
 
-## [1.1.0] — Development
+## [1.1.0] — In development
 
-Planned for this release; items are not considered complete until implemented and tested on a real Android TV:
+Implemented in this development branch:
+- Increase Android versionCode to 2 and versionName to 1.1.0.
+- Add an Aura Launcher Settings entry.
+- Add persistent preset background palettes (default, ocean, forest and sunset).
+- Require a deliberate 500 ms hold before the app context menu opens.
+- Hide Settings, Wi-Fi, Bluetooth or Display shortcuts when the system reports no matching activity.
+- Keep the app free of new network permissions and external SDK dependencies.
 
-- Correct long-press timing and make the app context menu require an explicit selection.
-- Add an Aura Launcher settings screen for appearance preferences.
-- Add selectable background colors and local custom wallpaper support.
-- Improve startup responsiveness and app artwork rendering while keeping memory use low.
-- Show only system shortcuts that the TV exposes as launchable.
-- Add TV status and media/input shortcuts only where Android and the device expose reliable APIs.
-- Preserve the existing application ID and permanent production signing key.
+Still requiring implementation and device validation before a production release:
+- Custom wallpaper picker and wallpaper rendering.
+- Wi-Fi connection name/status, storage/RAM dashboard, brightness and volume controls.
+- Reliable TV input source and connected peripheral detection.
+- Browser/private-search and YouTube shortcuts.
+- Real-device testing on low-memory (1 GB RAM) Android TV hardware, accessibility/focus testing, release signing verification, and APK size/performance measurements.
+
+These items are not claimed as complete. Do not publish v1.1.0 until the build and device validation pass.
 
 ## [1.0.0] — Initial public release
 
