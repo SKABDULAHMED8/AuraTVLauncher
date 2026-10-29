@@ -123,26 +123,11 @@ Output: `app/build/outputs/apk/debug/app-debug.apk`
 
 Debug APKs are for development and testing. They are not the official production download.
 
-### Build a signed release APK
+### Official production release
 
-Release signing uses environment variables supplied to Gradle by the release workflow. Do not commit a keystore or passwords to the repository.
+For the official production APK, download the latest published release from the [GitHub Releases page](https://github.com/SKABDULAHMED8/AuraTVLauncher/releases/latest).
 
-The tag-triggered GitHub Actions workflow expects these repository secrets:
-
-- `RELEASE_KEYSTORE_BASE64`
-- `RELEASE_STORE_PASSWORD`
-- `RELEASE_KEY_ALIAS`
-- `RELEASE_KEY_PASSWORD`
-
-To trigger a versioned release build, create and push a version tag only after the corresponding source is ready:
-
-```bash
-git tag v1.0.1
-git push origin v1.0.1
-```
-
-The workflow builds the release APK, creates a SHA-256 checksum, and creates a **draft** GitHub Release. Review the draft and publish it when ready. Do not create a new version tag for the already-published `v1.0.0`.
-
+Release signing credentials are managed privately by the project maintainer through GitHub Actions. Never commit signing keys, keystores, or passwords to the repository.
 ## Project structure
 
 ```text
