@@ -48,6 +48,10 @@ No ads. No banners. No tracking. Dark and Light themes.
 | Up, then OK on **Theme** | Switch between Auto, Dark and Light |
 | Back | Stays on the home screen |
 
+## Download
+
+Signed APKs are published on the [Releases page](../../releases). Download `AuraLauncher-v1.0.0.apk` (or the latest version) and follow **Install on your TV** below.
+
 ## Download and build
 
 ### Option 1: build in the cloud with GitHub Actions (no setup)
@@ -79,7 +83,7 @@ gradle assembleDebug      # app/build/outputs/apk/debug/app-debug.apk
 gradle assembleRelease    # app/build/outputs/apk/release/app-release.apk
 ```
 
-> The release build is signed with the debug key so it installs directly. Use your own keystore before publishing to an app store.
+> Tagged release builds are signed with a permanent key stored in GitHub Secrets (`RELEASE_KEYSTORE_BASE64`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`), so updates install over older versions. Branch builds produce an unsigned-for-release debug APK for testing only. Never commit the keystore.
 
 ## Install on your TV
 
