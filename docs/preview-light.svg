@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" font-family="Helvetica, Arial, sans-serif">
+<title>Aura Launcher home screen, light theme</title>
+<rect width="960" height="540" fill="#eef1f8"/>
+<text x="56" y="100" font-size="52" font-weight="300" fill="#14141c">9:41</text>
+<text x="56" y="126" font-size="18" fill="#626478">Thursday, 29 October</text>
+<rect x="710" y="62" width="194" height="52" rx="26" fill="#0a84ff"/>
+<text x="807" y="94" font-size="18" font-weight="500" text-anchor="middle" fill="#ffffff">Theme: Light</text>
+<text x="56" y="172" font-size="20" font-weight="500" fill="#626478">All Apps</text>
+<g transform="translate(176 271.5) scale(1.1) translate(-120 -67.5)"><rect width="240" height="135" rx="18" fill="#5b4fd6" stroke="#0a84ff" stroke-width="3"/><text x="14" y="120" font-size="17" font-weight="500" fill="#fff">Videos</text></g>
+<rect x="320" y="204" width="240" height="135" rx="18" fill="#1d9e75"/><text x="334" y="324" font-size="17" font-weight="500" fill="#fff">Music</text>
+<rect x="584" y="204" width="240" height="135" rx="18" fill="#d85a30"/><text x="598" y="324" font-size="17" font-weight="500" fill="#fff">Games</text>
+<rect x="848" y="204" width="240" height="135" rx="18" fill="#378add"/><text x="862" y="324" font-size="17" font-weight="500" fill="#fff">Browser</text>
+<rect x="1112" y="204" width="240" height="135" rx="18" fill="#d4537e"/><text x="1126" y="324" font-size="17" font-weight="500" fill="#fff">Photos</text>
+<text x="56" y="388" font-size="20" font-weight="500" fill="#626478">System</text>
+<rect x="56" y="408" width="200" height="112" rx="18" fill="#ffffff" stroke="#d3d9e6" stroke-width="1"/><text x="156" y="472" font-size="20" font-weight="500" text-anchor="middle" fill="#14141c">Settings</text>
+<rect x="280" y="408" width="200" height="112" rx="18" fill="#ffffff" stroke="#d3d9e6" stroke-width="1"/><text x="380" y="472" font-size="20" font-weight="500" text-anchor="middle" fill="#14141c">Wi-Fi</text>
+<rect x="504" y="408" width="200" height="112" rx="18" fill="#ffffff" stroke="#d3d9e6" stroke-width="1"/><text x="604" y="472" font-size="20" font-weight="500" text-anchor="middle" fill="#14141c">Bluetooth</text>
+<rect x="728" y="408" width="200" height="112" rx="18" fill="#ffffff" stroke="#d3d9e6" stroke-width="1"/><text x="828" y="472" font-size="20" font-weight="500" text-anchor="middle" fill="#14141c">Display</text>
+</svg>
