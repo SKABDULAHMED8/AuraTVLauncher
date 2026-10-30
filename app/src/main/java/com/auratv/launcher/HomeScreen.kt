@@ -1,6 +1,7 @@
 package com.auratv.launcher
 
 import android.content.Context
+import android.media.AudioManager
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -274,6 +275,17 @@ fun HomeScreen(
                         TextButton(onClick = onClearWallpaper) { Text("Remove wallpaper") }
                     }
                     Text("Wallpaper is scaled for TV display and loaded at reduced resolution to limit RAM use.")
+                    Text("Media volume")
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        TextButton(onClick = {
+                            (context.getSystemService(Context.AUDIO_SERVICE) as AudioManager)
+                                .adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI)
+                        }) { Text("Volume −") }
+                        TextButton(onClick = {
+                            (context.getSystemService(Context.AUDIO_SERVICE) as AudioManager)
+                                .adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI)
+                        }) { Text("Volume +") }
+                    }
                 }
             },
             confirmButton = { TextButton(onClick = { showSettings = false }) { Text("Done") } },
