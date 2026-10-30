@@ -1,8 +1,12 @@
 package com.auratv.launcher
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.provider.Settings
 import android.text.format.DateFormat
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,6 +38,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,6 +48,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 enum class SystemAction(val label: String, val intentAction: String) {
     SETTINGS("Settings", Settings.ACTION_SETTINGS),
@@ -61,6 +71,9 @@ fun HomeScreen(
     onSystem: (SystemAction) -> Unit,
     backgroundColor: String = "default",
     onCycleBackground: () -> Unit = {},
+    wallpaperUri: String? = null,
+    onWallpaperSelected: (Uri) -> Unit = {},
+    onClearWallpaper: () -> Unit = {},
 ) {
     val p = LocalPalette.current
     val context = LocalContext.current
@@ -72,6 +85,27 @@ fun HomeScreen(
     }
     var menuApp by remember { mutableStateOf<AppItem?>(null) }
     var showSettings by remember { mutableStateOf(false) }
+    val wallpaperPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) onWallpaperSelected(uri)
+    }
+    val wallpaperBitmap by produceState<Bitmap?>(null, wallpaperUri) {
+        value = if (wallpaperUri.isNullOrBlank()) null else withContext(Dispatchers.IO) {
+            runCatching {
+                val resolver = context.contentResolver
+                val uri = Uri.parse(wallpaperUri)
+                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+                if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return@runCatching null
+                var sample = 1
+                while (bounds.outWidth / sample > 1920 || bounds.outHeight / sample > 1080) sample *= 2
+                val options = BitmapFactory.Options().apply {
+                    inSampleSize = sample
+                    inPreferredConfig = Bitmap.Config.RGB_565
+                }
+                resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
+            }.getOrNull()
+        }
+    }
     val firstFocus = remember { FocusRequester() }
 
     val pinnedApps = remember(apps, pinnedPackages) {
@@ -111,6 +145,10 @@ fun HomeScreen(
                 )
             },
     ) {
+        if (wallpaperBitmap != null) {
+            Image(bitmap = wallpaperBitmap!!.asImageBitmap(), contentDescription = null,
+                modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+        }
         Column(Modifier.fillMaxSize()) {
             TopBar(themeMode = themeMode, onCycleTheme = onCycleTheme, onOpenSettings = { showSettings = true })
             Row(
@@ -209,7 +247,13 @@ fun HomeScreen(
                     TextButton(onClick = onCycleBackground) {
                         Text("Cycle background color ($backgroundColor)")
                     }
-                    Text("Wallpaper selection and advanced TV controls are being added in a later step.")
+                    TextButton(onClick = { wallpaperPicker.launch(arrayOf("image/*")) }) {
+                        Text("Choose wallpaper (device / USB)")
+                    }
+                    if (wallpaperUri != null) {
+                        TextButton(onClick = onClearWallpaper) { Text("Remove wallpaper") }
+                    }
+                    Text("Wallpaper is scaled for TV display and loaded at reduced resolution to limit RAM use.")
                 }
             },
             confirmButton = { TextButton(onClick = { showSettings = false }) { Text("Done") } },
