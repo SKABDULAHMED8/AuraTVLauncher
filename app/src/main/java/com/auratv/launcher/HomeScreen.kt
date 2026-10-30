@@ -253,11 +253,18 @@ private fun TopBar(themeMode: ThemeMode, onCycleTheme: () -> Unit, onOpenSetting
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Clock()
-        MenuButton(
-            text = "Theme: ${themeMode.label}",
-            wide = false,
-            onClick = onCycleTheme,
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            MenuButton(
+                text = "Theme: ${themeMode.label}",
+                wide = false,
+                onClick = onCycleTheme,
+            )
+            MenuButton(
+                text = "Settings",
+                wide = false,
+                onClick = onOpenSettings,
+            )
+        }
     }
 }
 
