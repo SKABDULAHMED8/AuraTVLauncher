@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusable
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -216,6 +217,7 @@ fun MenuButton(
             .background(bg)
             .onFocusChanged { focused = it.isFocused }
             .clickable(onClick = onClick)
+            .focusable()
             .padding(horizontal = 24.dp),
         contentAlignment = Alignment.Center,
     ) {
