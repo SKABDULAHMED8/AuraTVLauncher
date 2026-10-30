@@ -298,8 +298,6 @@ fun HomeScreen(
             confirmButton = { TextButton(onClick = { showSettings = false }) { Text("Done") } },
         )
     }
-
-    }
 }
 
 @Composable
