@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
             var themeMode by remember { mutableStateOf(prefs.themeMode) }
             var pinned by remember { mutableStateOf(prefs.pinned) }
             var backgroundColor by remember { mutableStateOf(prefs.backgroundColor) }
+            var wallpaperUri by remember { mutableStateOf(prefs.wallpaperUri) }
 
             val apps by produceState(emptyList<AppItem>(), reloadTick.intValue) {
                 value = withContext(Dispatchers.Default) { AppRepository.load(applicationContext) }
@@ -88,6 +89,9 @@ class MainActivity : ComponentActivity() {
                     },
                     onSystem = { action -> safeStart(Intent(action.intentAction)) },
                     backgroundColor = backgroundColor,
+                    wallpaperUri = wallpaperUri,
+                    onWallpaperSelected = { uri -> prefs.saveWallpaper(this@MainActivity, uri); wallpaperUri = uri.toString() },
+                    onClearWallpaper = { prefs.clearWallpaper(this@MainActivity); wallpaperUri = null },
                     onCycleBackground = {
                         backgroundColor = when (backgroundColor) {
                             "default" -> "ocean"
