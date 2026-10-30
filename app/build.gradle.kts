@@ -35,6 +35,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Install the test build beside the production app.
+            // This does not change the production applicationId or release signing.
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("release")
