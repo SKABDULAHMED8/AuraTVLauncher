@@ -101,6 +101,10 @@ class MainActivity : ComponentActivity() {
                         }
                         prefs.backgroundColor = backgroundColor
                     },
+                    onSelectBackground = { preset ->
+                        backgroundColor = preset
+                        prefs.backgroundColor = preset
+                    },
                 )
             }
         }
