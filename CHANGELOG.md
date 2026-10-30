@@ -14,7 +14,7 @@ Implemented in this development branch:
 
 Still requiring implementation and device validation before a production release:
 - Custom wallpaper picker for image files exposed by local storage or USB providers; persistable URI permission and sampled wallpaper rendering (up to 1920×1080, RGB_565).
-- Wi-Fi connection type/status (SSID is not exposed), RAM and internal storage dashboard. Brightness/volume controls remain device-specific and are not implemented.
+- Wi-Fi connection type/status (SSID is not exposed), RAM and internal storage dashboard. In-app media volume controls are implemented. Brightness control remains device-specific and is not implemented.
 - Reliable TV input source and connected peripheral detection.
 - Browser and YouTube shortcuts when compatible apps are installed. Private browsing mode selection is not implemented because browser-specific APIs vary.
 - Real-device testing on low-memory (1 GB RAM) Android TV hardware, accessibility/focus testing, release signing verification, and APK size/performance measurements.
