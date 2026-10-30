@@ -64,6 +64,12 @@ fun HomeScreen(
 ) {
     val p = LocalPalette.current
     val context = LocalContext.current
+    val deviceSnapshot by produceState(DeviceStatus.read(context)) {
+        while (true) {
+            value = DeviceStatus.read(context)
+            delay(5_000)
+        }
+    }
     var menuApp by remember { mutableStateOf<AppItem?>(null) }
     var showSettings by remember { mutableStateOf(false) }
     val firstFocus = remember { FocusRequester() }
@@ -107,6 +113,15 @@ fun HomeScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             TopBar(themeMode = themeMode, onCycleTheme = onCycleTheme, onOpenSettings = { showSettings = true })
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 56.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
+                Text(deviceSnapshot.wifi, color = p.textDim, fontSize = 14.sp)
+                Text(deviceSnapshot.memory, color = p.textDim, fontSize = 14.sp)
+                Text(deviceSnapshot.storage, color = p.textDim, fontSize = 14.sp)
+                Text(deviceSnapshot.inputDevices, color = p.textDim, fontSize = 14.sp)
+            }
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
