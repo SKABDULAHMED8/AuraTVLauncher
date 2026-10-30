@@ -33,7 +33,22 @@ class Prefs(context: Context) {
         set(value) { sp.edit().putString("wallpaper_uri", value).apply() }
 
     fun saveWallpaper(context: Context, uri: Uri) {
-        runCatching { context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+        runCatching {
+            context.contentResolver.takePersistableUriPermission(
+                uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+        }
         wallpaperUri = uri.toString()
+    }
+
+    fun clearWallpaper(context: Context) {
+        wallpaperUri?.let { saved ->
+            runCatching {
+                context.contentResolver.releasePersistableUriPermission(
+                    Uri.parse(saved), android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
+        }
+        wallpaperUri = null
     }
 }
