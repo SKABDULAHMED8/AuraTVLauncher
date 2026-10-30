@@ -1,5 +1,6 @@
 package com.auratv.launcher
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -61,7 +62,19 @@ enum class SystemAction(
     BLUETOOTH("Bluetooth", Settings.ACTION_BLUETOOTH_SETTINGS),
     DISPLAY("Display", Settings.ACTION_DISPLAY_SETTINGS),
     BROWSER("Browser", Intent.ACTION_VIEW, Uri.parse("https://example.com")),
-    YOUTUBE("YouTube", Intent.ACTION_MAIN),
+    YOUTUBE("YouTube", Intent.ACTION_MAIN);
+
+    fun createIntent(context: Context): Intent = when (this) {
+        BROWSER -> Intent(Intent.ACTION_VIEW, dataUri)
+        YOUTUBE -> context.packageManager.getLeanbackLaunchIntentForPackage("com.google.android.youtube.tv")
+            ?: context.packageManager.getLaunchIntentForPackage("com.google.android.youtube.tv")
+            ?: Intent(Intent.ACTION_MAIN)
+        else -> Intent(intentAction)
+    }
+
+    fun isAvailable(context: Context): Boolean = runCatching {
+        createIntent(context).resolveActivity(context.packageManager) != null
+    }.getOrDefault(false)
 }
 
 @Composable
@@ -225,11 +238,7 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy(24.dp),
                         ) {
                             items(SystemAction.entries.filter { action ->
-                                val intent = if (action == SystemAction.YOUTUBE) {
-                                    context.packageManager.getLeanbackLaunchIntentForPackage("com.google.android.youtube.tv")
-                                        ?: context.packageManager.getLaunchIntentForPackage("com.google.android.youtube.tv")
-                                } else Intent(action.intentAction).apply { action.dataUri?.let(::setData) }
-                                intent?.resolveActivity(context.packageManager) != null
+                                action.isAvailable(context)
                             }) { action ->
                                 LabelTile(
                                     label = action.label,
