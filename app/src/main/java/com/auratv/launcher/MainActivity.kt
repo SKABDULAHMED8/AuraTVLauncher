@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                     onUninstall = { app ->
                         safeStart(Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}")))
                     },
-                    onSystem = { action -> safeStart(Intent(action.intentAction)) },
+                    onSystem = { action -> safeStart(action.createIntent(this@MainActivity)) },
                     backgroundColor = backgroundColor,
                     wallpaperUri = wallpaperUri,
                     onWallpaperSelected = { uri -> prefs.saveWallpaper(this@MainActivity, uri); wallpaperUri = uri.toString() },
