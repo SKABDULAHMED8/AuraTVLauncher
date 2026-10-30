@@ -233,7 +233,7 @@ fun HomeScreen(
                                         Modifier.focusRequester(firstFocus)
                                     } else Modifier,
                                     onClick = { onLaunch(app) },
-                                    onLongClick = { menuApp = app },
+                                    onLongClick = { onTogglePin(app.packageName) },
                                 )
                             }
                         }
@@ -299,7 +299,8 @@ fun HomeScreen(
         )
     }
 
-
+    }
+}
 
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) {
