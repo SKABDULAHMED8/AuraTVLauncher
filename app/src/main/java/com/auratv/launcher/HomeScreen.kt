@@ -14,10 +14,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -102,6 +104,7 @@ fun HomeScreen(
     onSystem: (SystemAction) -> Unit,
     backgroundColor: String = "default",
     onCycleBackground: () -> Unit = {},
+    onSelectBackground: (String) -> Unit = {},
     wallpaperUri: String? = null,
     onWallpaperSelected: (Uri) -> Unit = {},
     onClearWallpaper: () -> Unit = {},
@@ -209,6 +212,7 @@ fun HomeScreen(
                 onCycleTheme = onCycleTheme,
                 backgroundColor = backgroundColor,
                 onCycleBackground = onCycleBackground,
+                onSelectBackground = onSelectBackground,
                 onChooseWallpaper = { wallpaperPicker.launch(arrayOf("image/*")) },
                 onClearWallpaper = onClearWallpaper,
                 hasCustomWallpaper = wallpaperUri != null,
@@ -321,6 +325,7 @@ private fun SettingsPage(
     onCycleTheme: () -> Unit,
     backgroundColor: String,
     onCycleBackground: () -> Unit,
+    onSelectBackground: (String) -> Unit,
     onChooseWallpaper: () -> Unit,
     onClearWallpaper: () -> Unit,
     hasCustomWallpaper: Boolean,
@@ -360,10 +365,10 @@ private fun SettingsPage(
                                 Modifier.width(150.dp).height(72.dp)
                                     .clip(RoundedCornerShape(16.dp))
                                     .background(Brush.linearGradient(backgroundBrushColors(p, preset)))
-                                    .border(if (selected) 3.dp else 1.dp, if (selected) p.ring else Color.White.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
+                                    .border(if (selected) 3.dp else 1.dp, if (selected) p.ring else Color.White.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
+                                    .clickable { onSelectBackground(preset) },
                                 contentAlignment = Alignment.Center,
                             ) {
-                                androidx.compose.foundation.clickable
                                 Text(preset.replaceFirstChar { it.uppercase() }, color = Color.White, fontWeight = FontWeight.SemiBold)
                             }
                         }
@@ -409,7 +414,7 @@ private fun SettingsPage(
 }
 
 @Composable
-private fun SettingsPanel(title: String, content: @Composable Column.() -> Unit) {
+private fun SettingsPanel(title: String, content: @Composable ColumnScope.() -> Unit) {
     val p = LocalPalette.current
     Column(
         Modifier.fillMaxWidth()
