@@ -51,11 +51,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-enum class SystemAction(val label: String, val intentAction: String) {
+enum class SystemAction(
+    val label: String,
+    val intentAction: String,
+    val dataUri: Uri? = null,
+) {
     SETTINGS("Settings", Settings.ACTION_SETTINGS),
     WIFI("Wi-Fi", Settings.ACTION_WIFI_SETTINGS),
     BLUETOOTH("Bluetooth", Settings.ACTION_BLUETOOTH_SETTINGS),
     DISPLAY("Display", Settings.ACTION_DISPLAY_SETTINGS),
+    BROWSER("Browser", Intent.ACTION_VIEW, Uri.parse("https://example.com")),
+    YOUTUBE("YouTube", Intent.ACTION_MAIN),
 }
 
 @Composable
@@ -219,7 +225,11 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy(24.dp),
                         ) {
                             items(SystemAction.entries.filter { action ->
-                                runCatching { Intent(action.intentAction).resolveActivity(context.packageManager) != null }.getOrDefault(false)
+                                val intent = if (action == SystemAction.YOUTUBE) {
+                                    context.packageManager.getLeanbackLaunchIntentForPackage("com.google.android.youtube.tv")
+                                        ?: context.packageManager.getLaunchIntentForPackage("com.google.android.youtube.tv")
+                                } else Intent(action.intentAction).apply { action.dataUri?.let(::setData) }
+                                intent?.resolveActivity(context.packageManager) != null
                             }) { action ->
                                 LabelTile(
                                     label = action.label,
