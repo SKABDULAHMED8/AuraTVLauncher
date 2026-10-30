@@ -32,6 +32,10 @@ class Prefs(context: Context) {
         get() = sp.getString("wallpaper_uri", null)
         set(value) { sp.edit().putString("wallpaper_uri", value).apply() }
 
+    var builtInWallpaperId: String?
+        get() = sp.getString("built_in_wallpaper_id", null)
+        set(value) { sp.edit().putString("built_in_wallpaper_id", value).apply() }
+
     fun saveWallpaper(context: Context, uri: Uri) {
         runCatching {
             context.contentResolver.takePersistableUriPermission(

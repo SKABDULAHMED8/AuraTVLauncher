@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,6 +66,17 @@ import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+
+private data class BuiltInWallpaper(val id: String, val title: String, val drawableRes: Int)
+
+private val builtInWallpapers = listOf(
+    BuiltInWallpaper("m82", "M82 Cigar Galaxy", R.drawable.m82_cigar_galaxy),
+    BuiltInWallpaper("andromeda", "Andromeda Galaxy", R.drawable.andromeda_galaxy),
+    BuiltInWallpaper("trifid", "Trifid Nebula", R.drawable.trifid_nebula),
+    BuiltInWallpaper("orion", "Orion Nebula", R.drawable.orion_nebula),
+    BuiltInWallpaper("crab", "Crab Nebula", R.drawable.crab_nebula),
+    BuiltInWallpaper("rosette", "Rosette Nebula", R.drawable.rosette_nebula),
+)
 
 enum class SystemAction(
     val label: String,
@@ -106,6 +118,8 @@ fun HomeScreen(
     onCycleBackground: () -> Unit = {},
     onSelectBackground: (String) -> Unit = {},
     wallpaperUri: String? = null,
+    builtInWallpaperId: String? = null,
+    onSelectBuiltInWallpaper: (String?) -> Unit = {},
     onWallpaperSelected: (Uri) -> Unit = {},
     onClearWallpaper: () -> Unit = {},
 ) {
@@ -126,13 +140,17 @@ fun HomeScreen(
     val wallpaperPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) onWallpaperSelected(uri)
     }
-    val wallpaperBitmap by produceState<Bitmap?>(null, wallpaperUri) {
-        value = if (wallpaperUri.isNullOrBlank()) null else withContext(Dispatchers.IO) {
+    val wallpaperBitmap by produceState<Bitmap?>(null, wallpaperUri, builtInWallpaperId) {
+        value = withContext(Dispatchers.IO) {
             runCatching {
-                val resolver = context.contentResolver
-                val uri = Uri.parse(wallpaperUri)
+                val builtIn = builtInWallpapers.firstOrNull { it.id == builtInWallpaperId }
                 val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+                if (builtIn != null) {
+                    BitmapFactory.decodeResource(context.resources, builtIn.drawableRes, bounds)
+                } else if (!wallpaperUri.isNullOrBlank()) {
+                    val uri = Uri.parse(wallpaperUri)
+                    context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+                } else return@runCatching null
                 if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return@runCatching null
                 var sample = 1
                 while (bounds.outWidth / sample > 1920 || bounds.outHeight / sample > 1080) sample *= 2
@@ -140,7 +158,12 @@ fun HomeScreen(
                     inSampleSize = sample
                     inPreferredConfig = Bitmap.Config.RGB_565
                 }
-                resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
+                if (builtIn != null) {
+                    BitmapFactory.decodeResource(context.resources, builtIn.drawableRes, options)
+                } else {
+                    val uri = Uri.parse(wallpaperUri)
+                    context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
+                }
             }.getOrNull()
         }
     }
@@ -216,6 +239,8 @@ fun HomeScreen(
                 onChooseWallpaper = { wallpaperPicker.launch(arrayOf("image/*")) },
                 onClearWallpaper = onClearWallpaper,
                 hasCustomWallpaper = wallpaperUri != null,
+                builtInWallpaperId = builtInWallpaperId,
+                onSelectBuiltInWallpaper = onSelectBuiltInWallpaper,
                 volumePercent = volumePercent,
                 onVolumeChange = {
                     volumePercent = it
@@ -329,6 +354,8 @@ private fun SettingsPage(
     onChooseWallpaper: () -> Unit,
     onClearWallpaper: () -> Unit,
     hasCustomWallpaper: Boolean,
+    builtInWallpaperId: String?,
+    onSelectBuiltInWallpaper: (String?) -> Unit,
     volumePercent: Float,
     onVolumeChange: (Float) -> Unit,
     brightnessPercent: Float,
@@ -373,6 +400,41 @@ private fun SettingsPage(
                             }
                         }
                     }
+                    Text("Built-in HD wallpapers (offline)", color = p.textDim, fontSize = 15.sp)
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        item {
+                            Column(
+                                Modifier.width(156.dp).clip(RoundedCornerShape(14.dp))
+                                    .border(if (builtInWallpaperId == null && !hasCustomWallpaper) 3.dp else 1.dp, if (builtInWallpaperId == null && !hasCustomWallpaper) p.ring else Color.White.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
+                                    .clickable { onSelectBuiltInWallpaper(null) }.padding(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Box(Modifier.fillMaxWidth().height(82.dp).background(Brush.verticalGradient(backgroundBrushColors(p, backgroundColor))), contentAlignment = Alignment.Center) {
+                                    Text("No image", color = Color.White, fontSize = 14.sp)
+                                }
+                                Text("Colour background", color = p.text, fontSize = 13.sp)
+                            }
+                        }
+                        items(builtInWallpapers) { wallpaper ->
+                            val selected = builtInWallpaperId == wallpaper.id
+                            Column(
+                                Modifier.width(156.dp).clip(RoundedCornerShape(14.dp))
+                                    .border(if (selected) 3.dp else 1.dp, if (selected) p.ring else Color.White.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
+                                    .clickable { onSelectBuiltInWallpaper(wallpaper.id) }.padding(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Image(
+                                    painter = painterResource(wallpaper.drawableRes),
+                                    contentDescription = wallpaper.title,
+                                    modifier = Modifier.fillMaxWidth().height(82.dp).clip(RoundedCornerShape(8.dp)),
+                                    contentScale = ContentScale.Crop,
+                                )
+                                Text(wallpaper.title, color = p.text, fontSize = 13.sp, maxLines = 1)
+                                if (selected) Text("Selected", color = p.ring, fontSize = 11.sp)
+                            }
+                        }
+                    }
+                    Text("Images are bundled in the app and work offline. Selecting a built-in image replaces the custom wallpaper.", color = p.textDim, fontSize = 13.sp)
                     Text("Use the background button to cycle through the built-in colour collection.", color = p.textDim, fontSize = 13.sp)
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         MenuButton("Next background", wide = false, onClick = onCycleBackground)

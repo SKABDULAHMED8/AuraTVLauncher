@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
             var pinned by remember { mutableStateOf(prefs.pinned) }
             var backgroundColor by remember { mutableStateOf(prefs.backgroundColor) }
             var wallpaperUri by remember { mutableStateOf(prefs.wallpaperUri) }
+            var builtInWallpaperId by remember { mutableStateOf(prefs.builtInWallpaperId) }
 
             val apps by produceState(emptyList<AppItem>(), reloadTick.intValue) {
                 value = withContext(Dispatchers.Default) { AppRepository.load(applicationContext) }
@@ -90,7 +91,21 @@ class MainActivity : ComponentActivity() {
                     onSystem = { action -> safeStart(action.createIntent(this@MainActivity)) },
                     backgroundColor = backgroundColor,
                     wallpaperUri = wallpaperUri,
-                    onWallpaperSelected = { uri -> prefs.saveWallpaper(this@MainActivity, uri); wallpaperUri = uri.toString() },
+                    builtInWallpaperId = builtInWallpaperId,
+                    onSelectBuiltInWallpaper = { id ->
+                        builtInWallpaperId = id
+                        prefs.builtInWallpaperId = id
+                        if (id != null && wallpaperUri != null) {
+                            prefs.clearWallpaper(this@MainActivity)
+                            wallpaperUri = null
+                        }
+                    },
+                    onWallpaperSelected = { uri ->
+                        prefs.saveWallpaper(this@MainActivity, uri)
+                        wallpaperUri = uri.toString()
+                        builtInWallpaperId = null
+                        prefs.builtInWallpaperId = null
+                    },
                     onClearWallpaper = { prefs.clearWallpaper(this@MainActivity); wallpaperUri = null },
                     onCycleBackground = {
                         backgroundColor = when (backgroundColor) {
