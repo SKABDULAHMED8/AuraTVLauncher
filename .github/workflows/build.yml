@@ -2,9 +2,14 @@ name: Build Aura Launcher
 
 on:
   push:
-    branches: [main, master]
-    tags: ["v*"]
+    branches:
+      - main
+      - feature/aura-v1.1.0-tv-customization
+    tags:
+      - "v*"
   pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
