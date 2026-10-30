@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/aura-v1.1.0-tv-customization
     tags:
       - "v*"
   pull_request:
@@ -35,7 +34,7 @@ jobs:
         with:
           gradle-version: 8.10.2
 
-      - name: Build debug APK (branch pushes, pull requests, manual runs)
+      - name: Build debug APK (main pushes, pull requests, manual runs)
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: gradle assembleDebug --no-daemon
 
