@@ -44,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -335,7 +334,7 @@ private fun SettingsPage(
                                     .clip(RoundedCornerShape(16.dp))
                                     .background(Brush.linearGradient(backgroundBrushColors(p, preset)))
                                     .border(if (selected) 3.dp else 1.dp, if (selected) p.ring else Color.White.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
-                                    .clickable { onSelectBackground(preset) }.focusable(),
+                                    .clickable { onSelectBackground(preset) },
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(preset.replaceFirstChar { it.uppercase() }, color = Color.White, fontWeight = FontWeight.SemiBold)
@@ -348,7 +347,7 @@ private fun SettingsPage(
                             Column(
                                 Modifier.width(156.dp).clip(RoundedCornerShape(14.dp))
                                     .border(if (builtInWallpaperId == null && !hasCustomWallpaper) 3.dp else 1.dp, if (builtInWallpaperId == null && !hasCustomWallpaper) p.ring else Color.White.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
-                                    .clickable { onSelectBuiltInWallpaper(null) }.focusable().padding(8.dp),
+                                    .clickable { onSelectBuiltInWallpaper(null) }.padding(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Box(Modifier.fillMaxWidth().height(82.dp).background(Brush.verticalGradient(backgroundBrushColors(p, backgroundColor))), contentAlignment = Alignment.Center) {
@@ -362,7 +361,7 @@ private fun SettingsPage(
                             Column(
                                 Modifier.width(156.dp).clip(RoundedCornerShape(14.dp))
                                     .border(if (selected) 3.dp else 1.dp, if (selected) p.ring else Color.White.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
-                                    .clickable { onSelectBuiltInWallpaper(wallpaper.id) }.focusable().padding(8.dp),
+                                    .clickable { onSelectBuiltInWallpaper(wallpaper.id) }.padding(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Image(
