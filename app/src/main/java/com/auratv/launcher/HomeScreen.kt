@@ -96,9 +96,10 @@ fun HomeScreen(
 ) {
     val p = LocalPalette.current
     val context = LocalContext.current
-    val deviceSnapshot by produceState(DeviceStatus.read(context)) {
+    val initialDeviceSnapshot = remember(context) { DeviceStatus.read(context) }
+    val deviceSnapshot by produceState(initialDeviceSnapshot) {
         while (true) {
-            value = DeviceStatus.read(context)
+            value = withContext(Dispatchers.IO) { DeviceStatus.read(context) }
             delay(5_000)
         }
     }
