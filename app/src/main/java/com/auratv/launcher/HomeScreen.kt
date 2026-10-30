@@ -105,6 +105,7 @@ fun HomeScreen(
         }
     }
     var showSettings by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
     val wallpaperPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) onWallpaperSelected(uri)
     }
@@ -128,9 +129,8 @@ fun HomeScreen(
     }
     val firstFocus = remember { FocusRequester() }
 
-    val pinnedApps = remember(apps, pinnedPackages) {
-        pinnedPackages.mapNotNull { pkg -> apps.firstOrNull { it.packageName == pkg } }
-    }
+    val visibleApps = remember(apps, searchText) { if (searchText.isBlank()) apps else apps.filter { it.label.contains(searchText.trim(), ignoreCase = true) || it.packageName.contains(searchText.trim(), ignoreCase = true) } }
+    val pinnedApps = remember(visibleApps, pinnedPackages) { pinnedPackages.mapNotNull { pkg -> visibleApps.firstOrNull { it.packageName == pkg } } }
     val pinnedSet = remember(pinnedPackages) { pinnedPackages.toSet() }
 
     LaunchedEffect(apps.isNotEmpty()) {
@@ -181,6 +181,14 @@ fun HomeScreen(
                 Text(deviceSnapshot.inputDevices, color = p.textDim, fontSize = 14.sp)
             }
 
+            androidx.compose.material3.OutlinedTextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 56.dp, vertical = 8.dp),
+                singleLine = true,
+                label = { Text("Search apps") },
+                placeholder = { Text("Search installed apps") },
+            )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 48.dp),
@@ -215,8 +223,8 @@ fun HomeScreen(
                             contentPadding = PaddingValues(horizontal = 56.dp, vertical = 24.dp),
                             horizontalArrangement = Arrangement.spacedBy(24.dp),
                         ) {
-                            items(apps.size) { i ->
-                                val app = apps[i]
+                            items(visibleApps.size) { i ->
+                                val app = visibleApps[i]
                                 AppTile(
                                     app = app,
                                     width = 240.dp,
