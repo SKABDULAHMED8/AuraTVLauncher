@@ -41,11 +41,13 @@ object DeviceStatus {
         val used = totalStorage - available
 
         val inputManager = context.getSystemService(Context.INPUT_SERVICE) as InputManager
-        val devices = inputManager.inputDeviceIds.mapNotNull { id -> inputManager.getInputDevice(id) }
-            .filterNot { it.isVirtual }
+        // inputDeviceIds is an IntArray; convert it to a List before mapNotNull.
+        // Count devices reported by Android. Firmware may also report built-in devices.
+        val devices = inputManager.inputDeviceIds.toList()
+            .mapNotNull { id: Int -> inputManager.getInputDevice(id) }
         val keyboards = devices.count { it.sources and InputDevice.SOURCE_KEYBOARD == InputDevice.SOURCE_KEYBOARD }
         val mice = devices.count { it.sources and InputDevice.SOURCE_MOUSE == InputDevice.SOURCE_MOUSE }
-        val inputs = "Input devices: $keyboards keyboard(s), $mice mouse(s)"
+        val inputs = "Detected input devices: $keyboards keyboard(s), $mice mouse(s)"
 
         return DeviceSnapshot(
             wifi = wifi,
