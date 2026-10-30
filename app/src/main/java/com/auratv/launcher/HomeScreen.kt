@@ -104,7 +104,6 @@ fun HomeScreen(
             delay(5_000)
         }
     }
-    var menuApp by remember { mutableStateOf<AppItem?>(null) }
     var showSettings by remember { mutableStateOf(false) }
     val wallpaperPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) onWallpaperSelected(uri)
@@ -202,7 +201,7 @@ fun HomeScreen(
                                         height = 169.dp,
                                         modifier = if (i == 0) Modifier.focusRequester(firstFocus) else Modifier,
                                         onClick = { onLaunch(app) },
-                                        onLongClick = { menuApp = app },
+                                        onLongClick = { onTogglePin(app.packageName) },
                                     )
                                 }
                             }
@@ -292,17 +291,7 @@ fun HomeScreen(
         )
     }
 
-    menuApp?.let { app ->
-        AppMenuDialog(
-            app = app,
-            pinned = app.packageName in pinnedSet,
-            onDismiss = { menuApp = null },
-            onTogglePin = { onTogglePin(app.packageName) },
-            onInfo = { onAppInfo(app) },
-            onUninstall = { onUninstall(app) },
-        )
-    }
-}
+
 
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) {
