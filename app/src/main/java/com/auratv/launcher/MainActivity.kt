@@ -98,6 +98,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         runCatching { unregisterReceiver(packageReceiver) }
+        scope.cancel()
         super.onDestroy()
     }
 
