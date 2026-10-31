@@ -69,7 +69,6 @@ class LauncherModel(context: Context) {
     }
 
     fun cycleTheme() { theme = theme.next(); store.theme = theme }
-    fun setTheme(mode: ThemeMode) { theme = mode; store.theme = mode }
     fun cycleAccent() { accent = AccentId.entries[(accent.ordinal + 1) % AccentId.entries.size]; store.accent = accent }
     fun cycleSort() { sort = SortMode.entries[(sort.ordinal + 1) % SortMode.entries.size]; store.sort = sort }
 
