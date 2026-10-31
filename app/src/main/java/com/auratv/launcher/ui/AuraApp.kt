@@ -92,6 +92,7 @@ fun AuraApp(model: LauncherModel, actions: AppActions, wallpaperMessage: String?
                         favoriteCount = favPkgs.size,
                         isHidden = app.packageName in model.hidden,
                         onDismiss = { menuApp = null },
+                        onOpen = { actions.launch(app) },
                         onToggleFavorite = { model.togglePin(app.packageName) },
                         onMove = { model.movePin(app.packageName, it) },
                         onToggleHidden = { model.toggleHidden(app.packageName) },

@@ -1,6 +1,5 @@
 package com.auratv.launcher.ui
 
-import android.text.format.DateFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,35 +18,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.auratv.launcher.LauncherModel
 import com.auratv.launcher.data.AppEntry
-import kotlinx.coroutines.delay
-import java.util.Date
 
-@Composable
-fun Clock() {
-    val c = LocalColors.current
-    val d = LocalDimens.current
-    val context = LocalContext.current
-    // Updates once a minute, aligned to the minute boundary.
-    val text by produceState("") {
-        val fmt = DateFormat.getTimeFormat(context)
-        while (true) {
-            val now = System.currentTimeMillis()
-            value = fmt.format(Date(now))
-            delay(60_000L - now % 60_000L + 50L)
-        }
-    }
-    Text(text, color = c.textDim, fontSize = d.sp(22f))
+/** Lets a child draw past the grid's side padding, so a scrolling row can run edge to edge. */
+private fun Modifier.bleed(extra: Dp): Modifier = layout { measurable, constraints ->
+    val e = extra.roundToPx()
+    val w = constraints.maxWidth + 2 * e
+    val placeable = measurable.measure(constraints.copy(minWidth = w, maxWidth = w))
+    layout(constraints.maxWidth, placeable.height) { placeable.place(-e, 0) }
 }
 
 @Composable
@@ -78,9 +65,9 @@ fun HomeScreen(
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("Aura", color = c.text, fontFamily = BrandFont, fontWeight = FontWeight.Medium, fontSize = d.sp(40f))
+                AppTitle()
                 Spacer(Modifier.weight(1f))
-                Clock()
+                StatusCluster()
                 Spacer(Modifier.width(d.dp(20f)))
                 AuraButton("Settings", onClick = onSettings)
             }
@@ -93,8 +80,8 @@ fun HomeScreen(
                 val tile = d.dp(124f)
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(gap),
-                    contentPadding = PaddingValues(vertical = d.dp(12f)),
-                    modifier = Modifier.fillMaxWidth().height(tile + d.dp(24f)),
+                    contentPadding = PaddingValues(horizontal = margin, vertical = d.dp(14f)),
+                    modifier = Modifier.bleed(margin).height(tile + d.dp(28f)),
                 ) {
                     items(favs, key = { it.key }) { app ->
                         DockTile(

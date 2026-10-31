@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -299,6 +303,7 @@ fun AppMenuDialog(
     favoriteCount: Int,
     isHidden: Boolean,
     onDismiss: () -> Unit,
+    onOpen: () -> Unit,
     onToggleFavorite: () -> Unit,
     onMove: (Int) -> Unit,
     onToggleHidden: () -> Unit,
@@ -309,14 +314,42 @@ fun AppMenuDialog(
     val d = LocalDimens.current
     val first = remember { FocusRequester() }
     LaunchedEffect(Unit) { first.requestFocusWhenReady() }
+    // The dialog usually opens while OK is still held (long-press). The held key keeps repeating
+    // into this window and its release would "press" the focused button. Select keys are ignored
+    // until a fresh press (a key-down with no repeat) starts inside the dialog.
+    val freshPress = remember { booleanArrayOf(false) }
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Column(
             modifier = Modifier
+                .onPreviewKeyEvent { ev ->
+                    val isSelect = ev.key == Key.DirectionCenter || ev.key == Key.Enter || ev.key == Key.NumPadEnter
+                    if (!isSelect) {
+                        false
+                    } else if (ev.type == KeyEventType.KeyDown) {
+                        if (ev.nativeKeyEvent.repeatCount == 0) {
+                            freshPress[0] = true
+                            false
+                        } else {
+                            !freshPress[0]
+                        }
+                    } else if (ev.type == KeyEventType.KeyUp) {
+                        if (freshPress[0]) {
+                            freshPress[0] = false
+                            false
+                        } else {
+                            true
+                        }
+                    } else {
+                        false
+                    }
+                }
                 .width(d.dp(440f))
+                .heightIn(max = (d.heightDp * 0.92f).dp)
                 .clip(RoundedCornerShape(d.dp(16f)))
                 .background(c.card)
-                .padding(d.dp(26f)),
-            verticalArrangement = Arrangement.spacedBy(d.dp(10f)),
+                .verticalScroll(rememberScrollState())
+                .padding(d.dp(24f)),
+            verticalArrangement = Arrangement.spacedBy(d.dp(8f)),
         ) {
             Text(
                 text = app.label,
@@ -329,9 +362,14 @@ fun AppMenuDialog(
                 modifier = Modifier.padding(bottom = d.dp(6f)),
             )
             AuraButton(
+                text = "Open app",
+                modifier = Modifier.fillMaxWidth(),
+                selected = true,
+                focusRequester = first,
+            ) { onDismiss(); onOpen() }
+            AuraButton(
                 text = if (isFavorite) "Remove from Favorites" else "Add to Favorites",
                 modifier = Modifier.fillMaxWidth(),
-                focusRequester = first,
             ) { onToggleFavorite(); onDismiss() }
             if (isFavorite && favoriteIndex > 0) {
                 AuraButton("Move earlier", Modifier.fillMaxWidth()) { onMove(-1); onDismiss() }

@@ -39,7 +39,15 @@ fun SettingsScreen(
             .padding(horizontal = d.dp(64f), vertical = d.dp(32f)),
         verticalArrangement = Arrangement.spacedBy(d.dp(12f)),
     ) {
-        Text("Settings", color = c.text, fontFamily = BrandFont, fontWeight = FontWeight.Medium, fontSize = d.sp(38f))
+        androidx.compose.foundation.layout.Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        ) {
+            AppTitle()
+            androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+            StatusCluster()
+        }
+        Text("Settings", color = c.text, fontFamily = BrandFont, fontWeight = FontWeight.Medium, fontSize = d.sp(30f))
         AuraButton("Theme: ${model.theme.label}  (press OK to change)", Modifier.fillMaxWidth(), focusRequester = first) { model.cycleTheme() }
         AuraButton("Accent colour: ${model.accent.label}", Modifier.fillMaxWidth()) { model.cycleAccent() }
         AuraButton("Sort apps: ${model.sort.label}", Modifier.fillMaxWidth()) { model.cycleSort() }
@@ -52,6 +60,7 @@ fun SettingsScreen(
         Text(
             "Aura Launcher ${BuildConfig.VERSION_NAME}" + (if (label.isNotEmpty()) "  ·  $label" else "") +
                 "\nNo ads, no analytics, no internet permission." +
+                "\nNetwork: ${if (rememberNetworkConnected()) "connected" else "not connected"}" +
                 "\nApps: ${model.apps.size}  ·  Artwork cache: ${model.loader.usedBytes() / 1024} KB of ${model.loader.capBytes / 1024} KB",
             color = c.textDim,
             fontSize = d.sp(16f),
