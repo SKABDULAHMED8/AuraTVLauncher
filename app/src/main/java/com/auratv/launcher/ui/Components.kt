@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -144,9 +143,8 @@ private val ceramic = listOf(
 fun AppArt(app: AppEntry, loader: ImageLoader, widthPx: Int, heightPx: Int, preferBanner: Boolean) {
     val d = LocalDimens.current
     val cacheKey = "${app.key}|$widthPx|$heightPx|$preferBanner"
-    val art by produceState<Art?>(initialValue = null, cacheKey) {
-        value = loader.load(app, widthPx, heightPx, preferBanner)
-    }
+    var art by remember(cacheKey) { mutableStateOf<Art?>(null) }
+    LaunchedEffect(cacheKey) { art = loader.load(app, widthPx, heightPx, preferBanner) }
     val a = art
     if (a != null && a.isBanner) {
         Image(

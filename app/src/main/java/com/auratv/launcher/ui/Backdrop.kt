@@ -45,10 +45,10 @@ fun wallpaperName(choice: WallpaperChoice): String = when (choice) {
 
 /** Draws the wallpaper. A custom image gets a soft scrim so text stays readable. */
 @Composable
-fun Backdrop(choice: WallpaperChoice, custom: ImageBitmap?, modifier: Modifier = Modifier.fillMaxSize()) {
+fun Backdrop(choice: WallpaperChoice, custom: ImageBitmap?, modifier: Modifier = Modifier) {
     val colors = LocalColors.current
     if (choice is WallpaperChoice.Custom && custom != null) {
-        Box(modifier) {
+        Box(modifier.fillMaxSize()) {
             Image(bitmap = custom, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             Box(Modifier.fillMaxSize().background(colors.bg.copy(alpha = if (colors.dark) 0.45f else 0.35f)))
         }
@@ -60,6 +60,7 @@ fun Backdrop(choice: WallpaperChoice, custom: ImageBitmap?, modifier: Modifier =
     }
     Box(
         modifier
+            .fillMaxSize()
             .background(if (colors.dark) spec.darkBase else spec.lightBase)
             .drawBehind {
                 for (g in spec.glows) {
