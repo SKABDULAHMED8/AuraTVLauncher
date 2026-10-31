@@ -14,6 +14,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
+        buildConfigField("String", "BUILD_LABEL", "\"\"")
     }
 
     signingConfigs {
@@ -41,6 +42,27 @@ android {
         }
     }
 
+    // ---- v1.1.0 development-only additions ----------------------------------------------
+    // The production signing config and the release build type above are NOT touched.
+    // The dev key below is public on purpose, is never used for releases, and must never
+    // be referenced from the release build type.
+    signingConfigs {
+        create("dev") {
+            storeFile = file("dev/aura-dev.keystore")
+            storePassword = "auradev"
+            keyAlias = "auradev"
+            keyPassword = "auradev"
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix = ".dev"
+            signingConfig = signingConfigs.getByName("dev")
+            buildConfigField("String", "BUILD_LABEL", "\"v1.1.0 dev preview\"")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -50,6 +72,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -60,4 +83,6 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material3:material3")
+
+    testImplementation("junit:junit:4.13.2")
 }

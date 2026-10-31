@@ -2,6 +2,7 @@ package com.auratv.launcher
 
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
+import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -9,34 +10,39 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.lifecycle.lifecycleScope
+import com.auratv.launcher.data.AppCatalog
+import com.auratv.launcher.ui.AppActions
+import com.auratv.launcher.ui.AuraApp
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    private val reloadTick = mutableIntStateOf(0)
+    private lateinit var model: LauncherModel
+    private var wallpaperMessage by mutableStateOf<String?>(null)
 
     private val packageReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            reloadTick.intValue++
+            refresh()
+        }
+    }
+
+    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch {
+            wallpaperMessage = if (model.importWallpaper(uri)) "Wallpaper applied." else "That image could not be used. Your previous wallpaper is unchanged."
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val prefs = Prefs(this)
+        model = LauncherModel(this)
 
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -46,54 +52,36 @@ class MainActivity : ComponentActivity() {
         }
         ContextCompat.registerReceiver(this, packageReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
 
-        setContent {
-            var themeMode by remember { mutableStateOf(prefs.themeMode) }
-            var pinned by remember { mutableStateOf(prefs.pinned) }
+        val actions = AppActions(
+            launch = { app -> safeStart(AppCatalog.launchIntent(app)) },
+            info = { app -> safeStart(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${app.packageName}"))) },
+            uninstall = { app -> safeStart(Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}"))) },
+            systemSettings = { safeStart(Intent(Settings.ACTION_SETTINGS)) },
+            pickImage = {
+                try {
+                    pickImage.launch("image/*")
+                } catch (_: ActivityNotFoundException) {
+                    wallpaperMessage = "This TV has no file picker for images. Choose a built-in wallpaper instead."
+                }
+            },
+        )
 
-            val apps by produceState(emptyList<AppItem>(), reloadTick.intValue) {
-                value = withContext(Dispatchers.Default) { AppRepository.load(applicationContext) }
-            }
+        setContent { AuraApp(model, actions, wallpaperMessage) }
+        refresh()
+    }
 
-            val dark = when (themeMode) {
-                ThemeMode.DARK -> true
-                ThemeMode.LIGHT -> false
-                ThemeMode.SYSTEM -> isSystemInDarkTheme()
-            }
-
-            // A launcher should never close when Back is pressed.
-            BackHandler(enabled = true) { }
-
-            CompositionLocalProvider(LocalPalette provides if (dark) DarkPalette else LightPalette) {
-                HomeScreen(
-                    apps = apps,
-                    pinnedPackages = pinned,
-                    themeMode = themeMode,
-                    onCycleTheme = {
-                        themeMode = themeMode.next()
-                        prefs.themeMode = themeMode
-                    },
-                    onTogglePin = { pkg ->
-                        pinned = if (pkg in pinned) pinned - pkg else pinned + pkg
-                        prefs.pinned = pinned
-                    },
-                    onLaunch = { app -> safeStart(app.launch) },
-                    onAppInfo = { app ->
-                        safeStart(
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${app.packageName}"))
-                        )
-                    },
-                    onUninstall = { app ->
-                        safeStart(Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}")))
-                    },
-                    onSystem = { action -> safeStart(Intent(action.intentAction)) },
-                )
-            }
-        }
+    private fun refresh() {
+        lifecycleScope.launch { model.refreshApps() }
     }
 
     override fun onResume() {
         super.onResume()
-        reloadTick.intValue++
+        refresh()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) model.loader.evictAll()
     }
 
     override fun onDestroy() {
@@ -105,7 +93,7 @@ class MainActivity : ComponentActivity() {
         try {
             startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         } catch (_: ActivityNotFoundException) {
-            // This TV build does not ship that screen; ignore.
+            // This TV build does not ship that screen.
         } catch (_: SecurityException) {
         }
     }
