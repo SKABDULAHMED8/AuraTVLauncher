@@ -1,0 +1,11 @@
+{
+  "signing_block_sha256": "9d2aad9e78dc39dcd3277cf6844a8e00c1220b858e9427d0c7d0d1cda9771d3c",
+  "release_build_type_sha256": "1354a8bcd8332d04bd761a858639777228ebec5f4cfad1377f87abbd9567a756",
+  "workflow_sha256": "b740e09f672ff9fa2f5e64c25ca59371527d37849aa4c9a094e9b0013b16f4ec",
+  "application_ids": [
+    "com.auratv.launcher"
+  ],
+  "release_signing_references": 1,
+  "initwith_used": false,
+  "source": "app/build.gradle.kts from tag v1.0.0; build.yml from main at v1.1.0 branch start"
+}
