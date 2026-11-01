@@ -6,7 +6,7 @@ This guide covers installing the official release APK on Android TV / Google TV,
 
 1. Open the [Aura Launcher Releases page](https://github.com/SKABDULAHMED8/AuraTVLauncher/releases).
 2. Open the latest published release.
-3. Download the APK asset, such as `AuraLauncher-v1.0.0.apk`.
+3. Download the APK asset, such as `AuraLauncher-vX.Y.Z.apk`.
 4. Optionally download the matching `.apk.sha256` checksum file.
 
 Use the APK attached to the published release. Do not use a debug APK for a normal production installation.
@@ -16,7 +16,7 @@ Use the APK attached to the published release. Do not use a debug APK for a norm
 Open PowerShell in the folder containing the APK and run:
 
 ```powershell
-Get-FileHash ".\AuraLauncher-v1.0.0.apk" -Algorithm SHA256
+Get-FileHash ".\AuraLauncher-vX.Y.Z.apk" -Algorithm SHA256
 ```
 
 Compare the resulting hash with the checksum file from the **same release**. A matching SHA-256 confirms the downloaded file matches the file used to create that checksum; it does not alone prove who signed the APK.
@@ -24,7 +24,7 @@ Compare the resulting hash with the checksum file from the **same release**. A m
 For Android signing verification, install Android SDK Build-Tools and run:
 
 ```powershell
-& "C:\Android\Sdk\build-tools\36.0.0\apksigner.bat" verify --verbose --print-certs ".\AuraLauncher-v1.0.0.apk"
+& "C:\Android\Sdk\build-tools\36.0.0\apksigner.bat" verify --verbose --print-certs ".\AuraLauncher-vX.Y.Z.apk"
 ```
 
 The certificate fingerprint can be compared with the project's known release certificate fingerprint. Use the release's documented fingerprint if one is published.
@@ -75,7 +75,7 @@ On the computer, install Android Platform Tools, then use the connection method 
 ```powershell
 adb connect TV_IP_ADDRESS:PORT
 adb devices
-adb install AuraLauncher-v1.0.0.apk
+adb install AuraLauncher-vX.Y.Z.apk
 ```
 
 Replace `TV_IP_ADDRESS:PORT` with the TV's actual address and port. Do not assume that port 5555 is available. If the TV does not expose debugging, use the file-manager method instead.

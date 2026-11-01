@@ -42,24 +42,11 @@ android {
         }
     }
 
-    // ---- v1.1.0 development-only additions ----------------------------------------------
-    // The production signing config and the release build type above are NOT touched.
-    // The dev key below is public on purpose, is never used for releases, and must never
-    // be referenced from the release build type.
-    signingConfigs {
-        create("dev") {
-            storeFile = file("dev/aura-dev.keystore")
-            storePassword = "auradev"
-            keyAlias = "auradev"
-            keyPassword = "auradev"
-        }
-    }
-
     buildTypes {
         debug {
+            // Installs beside the release build as "Aura Dev".
             applicationIdSuffix = ".dev"
-            signingConfig = signingConfigs.getByName("dev")
-            buildConfigField("String", "BUILD_LABEL", "\"v1.1.0 dev preview\"")
+            buildConfigField("String", "BUILD_LABEL", "\"debug build\"")
         }
     }
 
