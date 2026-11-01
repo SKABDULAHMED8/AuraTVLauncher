@@ -65,5 +65,10 @@ fun WallpaperScreen(model: LauncherModel, message: String?, onPickImage: () -> U
             "Your own image is copied and shrunk to fit this TV, so it keeps working if the USB drive is removed.",
             color = c.textDim, fontSize = d.sp(16f),
         )
+        Text(
+            "Best results: a JPG or PNG in 16:9 widescreen, 1920 × 1080 pixels (at least 1280 × 720), under 2 MB. " +
+                "Larger images work but are shrunk to 1280 × 720, and the saved copy is usually 100 to 400 KB.",
+            color = c.textDim, fontSize = d.sp(16f),
+        )
     }
 }
