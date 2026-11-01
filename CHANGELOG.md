@@ -27,7 +27,7 @@ This project uses version tags such as `v1.0.0`. Release dates and changes shoul
 - Faster, lighter artwork loading with a memory cap, and a cached app list for an instant first screen.
 - Adds the `ACCESS_NETWORK_STATE` permission (reads connection status only). Still no Internet permission, ads or analytics.
 - Updates v1.0.0 in place: same package name and signing key; theme and favorites are kept.
-- Verified by automated unit tests and lint on GitHub. On-TV behaviour is being confirmed by the owner.
+- Checked by automated unit tests and lint on GitHub, and installed and tested on an Android 9 TV.
 
 ## Unreleased
 

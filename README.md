@@ -4,6 +4,8 @@
 
 **A clean, Apple TV–inspired home screen for Android TV and Google TV.**
 
+*Android UI Redesigned Architecture*
+
 A simple, remote-friendly launcher with Dark, Light and Auto themes. No ads, analytics, or network permission.
 
 ![Platform](https://img.shields.io/badge/platform-Android%20TV-3ddc84)
@@ -18,27 +20,24 @@ A simple, remote-friendly launcher with Dark, Light and Auto themes. No ads, ana
 
 ---
 
-## Preview
-
-| Dark theme | Light theme |
-|:--:|:--:|
-| ![Illustrated preview of Aura Launcher in dark theme](docs/preview-dark.svg) | ![Illustrated preview of Aura Launcher in light theme](docs/preview-light.svg) |
-
-> **Preview note:** These are illustrative mockups, not photographs or captures from a running TV. The installed launcher displays apps available on your device. Real device screenshots can be added here as they become available.
-
 ## Features
 
 | Feature | What it does |
 |---|---|
-| **Apple TV–inspired layout** | Large rounded app cards, a clock and date, and a visible focus state for remote navigation. |
-| **Dark, Light and Auto themes** | Use the Theme control to cycle between the available themes. The choice is stored locally. |
-| **Favorites** | Keep frequently used apps in a larger Favorites row. |
-| **Installed apps** | Browse supported installed TV apps. TV apps can show their banners; other apps use icon tiles. |
-| **System shortcuts** | Quick access to Settings, Wi-Fi, Bluetooth and Display where the TV firmware supports those screens. |
+| **Remote-first home screen** | Large app cards, a thick high-contrast focus ring, dimmed unfocused cards, and an edge-to-edge Favorites carousel. |
+| **Status bar** | Date, clock and a network icon (green when connected to any network, red with a slash when not). |
+| **Dark, Light and Auto themes** | Choose in Settings. Four accent colours are available. |
+| **Favorites** | Keep frequently used apps in a Favorites row and reorder them. |
+| **Manage apps** | Hide or show apps, add or remove favorites, open app information or uninstall. Every action works with plain OK, for remotes that cannot long-press. |
+| **Sorting** | A to Z, Z to A, or newest first. |
+| **Wallpapers** | Six built-in wallpapers, or choose your own image. See the size guidance below. |
+| **Fast and light** | Artwork loads on demand into a size-capped cache, and the app list is cached for an instant first screen. |
 | **App list refresh** | The launcher responds to app installation, update and removal events. |
-| **Remote-first navigation** | Designed for a D-pad, OK/Select and Back buttons. |
-| **Local settings** | Theme and favorites are stored on the device. |
-| **No network permission** | The app manifest does not request Internet access and the project does not include ad or analytics SDKs. |
+| **No Internet permission** | The app manifest does not request Internet access and the project has no ad or analytics SDKs. |
+
+### Custom wallpaper size
+
+Best results: a JPG or PNG in 16:9 widescreen, 1920 × 1080 pixels (at least 1280 × 720), under 2 MB. Larger images work but are shrunk to 1280 × 720 and stored as a copy inside the app, so the wallpaper keeps working if the USB drive is removed.
 
 ## Remote control
 
@@ -46,9 +45,8 @@ A simple, remote-friendly launcher with Dark, Light and Auto themes. No ads, ana
 |---|---|
 | D-pad arrows | Move focus between controls and app cards |
 | OK / Select | Open the focused app or control |
-| Long-press OK, or Menu where supported | Open the app menu for supported actions such as favorites and app info |
-| Focus Theme and press OK | Cycle Auto, Dark and Light |
-| Back | Return to the launcher home screen |
+| Long-press OK, or Menu where supported | Open the app menu: Open app, Favorites, Hide, App information, Uninstall |
+| Back | Go back one level; never closes the launcher |
 
 Exact remote behavior can vary by TV manufacturer and remote model.
 
@@ -56,7 +54,7 @@ Exact remote behavior can vary by TV manufacturer and remote model.
 
 1. Open the [GitHub Releases page](https://github.com/SKABDULAHMED8/AuraTVLauncher/releases).
 2. Open the latest **published** release.
-3. Download the APK asset, for example `AuraLauncher-v1.0.0.apk`.
+3. Download the APK asset, for example `AuraLauncher-vX.Y.Z.apk`.
 4. Optionally download the accompanying `.apk.sha256` file to check the APK's SHA-256 hash.
 
 Only install an APK from a release you trust. The release APK is signed with the project's permanent release key.
@@ -81,7 +79,7 @@ On a computer with Android Platform Tools installed:
 
 ```powershell
 adb connect TV_IP_ADDRESS:5555
-adb install AuraLauncher-v1.0.0.apk
+adb install AuraLauncher-vX.Y.Z.apk
 ```
 
 Replace `TV_IP_ADDRESS` with your TV's IP address. Use the actual port shown by the TV's debugging settings; do not assume port 5555 is enabled. Accept the authorization prompt on the TV if one appears.
@@ -121,13 +119,18 @@ gradle assembleDebug
 
 Output: `app/build/outputs/apk/debug/app-debug.apk`
 
-Debug APKs are for development and testing. They are not the official production download.
+Debug APKs are for development and testing. They install as **Aura Dev** (`com.auratv.launcher.dev`) beside the release app and are not the official production download.
 
 ### Official production release
 
 For the official production APK, download the latest published release from the [GitHub Releases page](https://github.com/SKABDULAHMED8/AuraTVLauncher/releases/latest).
 
 Release signing credentials are managed privately by the project maintainer through GitHub Actions. Never commit signing keys, keystores, or passwords to the repository.
+
+### Building your own signed release (forks)
+
+A fork cannot sign with the maintainer's key, and APKs signed with a different key cannot update the official release. To publish your own builds, create your own signing key and provide it to the release workflow as private repository secrets, as set out in `.github/workflows/build.yml`. Keep the key backed up and never commit it.
+
 ## Project structure
 
 ```text
@@ -135,11 +138,12 @@ AuraTVLauncher/
 ├── app/src/main/
 │   ├── AndroidManifest.xml
 │   ├── java/com/auratv/launcher/
+│   │   ├── data/      # app scan, settings, artwork and wallpaper storage
+│   │   └── ui/        # screens and components (Jetpack Compose)
 │   └── res/
-├── docs/
-│   ├── INSTALLATION.md
-│   ├── preview-dark.svg
-│   └── preview-light.svg
+├── app/src/test/      # unit tests
+├── docs/INSTALLATION.md
+├── third_party/       # font licence
 ├── .github/workflows/build.yml
 ├── CHANGELOG.md
 └── README.md
@@ -157,7 +161,7 @@ AuraTVLauncher/
 
 ## Privacy
 
-The Android manifest does not request the `INTERNET` permission. Theme and favorites are stored locally. The app requests `REQUEST_DELETE_PACKAGES` for its uninstall action. Review the source code and permissions yourself if you need to validate these claims for a particular build.
+The Android manifest does not request the `INTERNET` permission. Settings, favorites and wallpapers are stored locally. The app requests `REQUEST_DELETE_PACKAGES` for its uninstall action and `ACCESS_NETWORK_STATE` only to show whether the TV is connected to a network. Review the source code and permissions yourself if you need to validate these claims for a particular build.
 
 ## Troubleshooting
 
@@ -171,16 +175,18 @@ The Android manifest does not request the `INTERNET` permission. Theme and favor
 
 ## Roadmap
 
-Ideas under consideration:
+Ideas under consideration, not promises or committed dates:
 
-- Custom wallpapers
-- Reorder and hide apps
-- Per-app row sorting
-
-These are ideas, not promises or committed release dates.
+- Real device screenshots in this README
+- More built-in wallpapers
+- Translations
 
 ## Contributing
 
 Bug reports and pull requests are welcome. Include your TV brand/model, Android version (if known), what you expected, and the steps to reproduce the issue. Do not include passwords, signing keys, or other secrets in issues.
 
 Please keep the project ad-free and network-free by default.
+
+## Credits and licences
+
+The brand font is EB Garamond, used under the SIL Open Font License 1.1 (see `third_party/EBGaramond-OFL.txt`).

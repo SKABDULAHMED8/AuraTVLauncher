@@ -8,3 +8,13 @@ captures/
 .externalNativeBuild/
 .cxx/
 *.apk
+.kotlin/
+dist/
+*.log
+
+# Never commit signing material
+*.jks
+*.keystore
+*.p12
+*.pem
+keystore.properties
